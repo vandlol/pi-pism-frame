@@ -1,0 +1,58 @@
+{
+  "name": "pi-pism-frame",
+  "version": "0.1.0",
+  "description": "A pi.dev extension that frames a session with a colored, named header, a status bar, and the terminal title — designed to pair with pism's memorable session names.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test test/*.test.ts",
+    "check": "npm run typecheck && npm run test && npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "pi",
+    "pi.dev",
+    "pi-coding-agent",
+    "pism",
+    "extension",
+    "tui",
+    "session",
+    "statusbar"
+  ],
+  "license": "MIT",
+  "author": "vandlol",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vandlol/pi-pism-frame.git"
+  },
+  "homepage": "https://github.com/vandlol/pi-pism-frame#readme",
+  "bugs": {
+    "url": "https://github.com/vandlol/pi-pism-frame/issues"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "0.84.4",
+    "@earendil-works/pi-tui": "*",
+    "@types/node": "^26.4.1",
+    "tsup": "^8.0.0",
+    "tsx": "^4.23.13",
+    "typescript": "^5.6.0"
+  }
+}
