@@ -5,14 +5,14 @@ header on top, a status bar, and the terminal tab title — so you always know
 which session you're in. Built to pair with [pism](https://github.com/vandlol/pism)'s
 memorable session names, but it works on its own too.
 
-```
-⬢ calm-otter  ·  mac ─────────────────────────────────────────
-  … your pi conversation …
-                                              ⬢ calm-otter · mac
-```
+![pi-pism-frame preview: a named colored header and full-width status bar, plus the 32-color pastel palette](assets/demo.svg)
 
 No forced box, no fighting pi's TUI — it decorates the official header, footer
-and title surfaces and nothing else. **You pick the style and color.**
+and title surfaces and nothing else. **You pick the style and color**, and each
+session name maps to its own readable pastel (all verified for contrast).
+
+> The preview above is synthetic — generated from the palette with placeholder
+> names/text (`npm run demo`), so it never shows a real session.
 
 ---
 

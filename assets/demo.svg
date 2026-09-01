@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="626" viewBox="0 0 860 626" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14">
+<rect width="860" height="626" rx="12" fill="#11111b"/>
+<rect x="22" y="22" width="816" height="230" rx="10" fill="#181825" stroke="#313244"/>
+<circle cx="44" cy="42" r="5" fill="#f38ba8"/>
+<circle cx="62" cy="42" r="5" fill="#f9e2af"/>
+<circle cx="80" cy="42" r="5" fill="#a6e3a1"/>
+<text x="430" y="46" fill="#cdd6f4" text-anchor="middle" opacity="0.8">pism: mac:calm-otter</text>
+<text x="38" y="80" xml:space="preserve"><tspan fill="#f4c3e3" font-weight="bold">⬢ calm-otter</tspan><tspan fill="#6b7089">  ·  mac</tspan></text>
+<text x="214.4" y="80" fill="#6b7089" xml:space="preserve">────────────────────────────────────────────────────────────────────────</text>
+<text x="38" y="106" fill="#9399b2" xml:space="preserve">› you: plan the migration in small steps</text>
+<text x="38" y="128" fill="#9399b2" xml:space="preserve">  pi: sure — here’s a first pass…</text>
+<text x="38" y="150" fill="#9399b2" xml:space="preserve">    1. inventory the current schema</text>
+<text x="38" y="172" fill="#9399b2" xml:space="preserve">    2. write a reversible migration</text>
+<rect x="32" y="216" width="796" height="26" rx="5" fill="#f4c3e3"/>
+<text x="44" y="234" fill="#6b1f51" font-weight="bold" xml:space="preserve">⬢ calm-otter  ·  mac</text>
+<text x="22" y="284" fill="#cdd6f4">32 readable pastels — auto-assigned per session name</text>
+<rect x="22" y="300" width="195" height="30" rx="5" fill="#f4c3cf"/>
+<text x="34" y="320" fill="#6f2034" font-weight="bold">⬢ rose</text>
+<rect x="229" y="300" width="195" height="30" rx="5" fill="#f4c9c3"/>
+<text x="241" y="320" fill="#6b291f" font-weight="bold">⬢ coral</text>
+<rect x="436" y="300" width="195" height="30" rx="5" fill="#f4cec3"/>
+<text x="448" y="320" fill="#672f1e" font-weight="bold">⬢ salmon</text>
+<rect x="643" y="300" width="195" height="30" rx="5" fill="#f4d6c3"/>
+<text x="655" y="320" fill="#63391d" font-weight="bold">⬢ peach</text>
+<rect x="22" y="338" width="195" height="30" rx="5" fill="#f4ddc3"/>
+<text x="34" y="358" fill="#5f3f1c" font-weight="bold">⬢ apricot</text>
+<rect x="229" y="338" width="195" height="30" rx="5" fill="#f4e3c3"/>
+<text x="241" y="358" fill="#5b451a" font-weight="bold">⬢ amber</text>
+<rect x="436" y="338" width="195" height="30" rx="5" fill="#f4e8c3"/>
+<text x="448" y="358" fill="#574919" font-weight="bold">⬢ honey</text>
+<rect x="643" y="338" width="195" height="30" rx="5" fill="#f4ebc3"/>
+<text x="655" y="358" fill="#574d19" font-weight="bold">⬢ gold</text>
+<rect x="22" y="376" width="195" height="30" rx="5" fill="#f4f0c3"/>
+<text x="34" y="396" fill="#534f18" font-weight="bold">⬢ lemon</text>
+<rect x="229" y="376" width="195" height="30" rx="5" fill="#eff4c3"/>
+<text x="241" y="396" fill="#4d5318" font-weight="bold">⬢ citron</text>
+<rect x="436" y="376" width="195" height="30" rx="5" fill="#e2f4c3"/>
+<text x="448" y="396" fill="#3d5318" font-weight="bold">⬢ lime</text>
+<rect x="643" y="376" width="195" height="30" rx="5" fill="#d3f4c3"/>
+<text x="655" y="396" fill="#2e5719" font-weight="bold">⬢ fern</text>
+<rect x="22" y="414" width="195" height="30" rx="5" fill="#c3f4c5"/>
+<text x="34" y="434" fill="#19571b" font-weight="bold">⬢ green</text>
+<rect x="229" y="414" width="195" height="30" rx="5" fill="#c3f4cf"/>
+<text x="241" y="434" fill="#195729" font-weight="bold">⬢ sage</text>
+<rect x="436" y="414" width="195" height="30" rx="5" fill="#c3f4dd"/>
+<text x="448" y="434" fill="#19573a" font-weight="bold">⬢ mint</text>
+<rect x="643" y="414" width="195" height="30" rx="5" fill="#c3f4e5"/>
+<text x="655" y="434" fill="#185341" font-weight="bold">⬢ emerald</text>
+<rect x="22" y="452" width="195" height="30" rx="5" fill="#c3f4f0"/>
+<text x="34" y="472" fill="#18534e" font-weight="bold">⬢ teal</text>
+<rect x="229" y="452" width="195" height="30" rx="5" fill="#c3f0f4"/>
+<text x="241" y="472" fill="#195257" font-weight="bold">⬢ aqua</text>
+<rect x="436" y="452" width="195" height="30" rx="5" fill="#c3eaf4"/>
+<text x="448" y="472" fill="#1a4e5b" font-weight="bold">⬢ cyan</text>
+<rect x="643" y="452" width="195" height="30" rx="5" fill="#c3e2f4"/>
+<text x="655" y="472" fill="#1d4963" font-weight="bold">⬢ sky</text>
+<rect x="22" y="490" width="195" height="30" rx="5" fill="#c3dbf4"/>
+<text x="34" y="510" fill="#1e4267" font-weight="bold">⬢ azure</text>
+<rect x="229" y="490" width="195" height="30" rx="5" fill="#c3d5f4"/>
+<text x="241" y="510" fill="#203d6f" font-weight="bold">⬢ cerulean</text>
+<rect x="436" y="490" width="195" height="30" rx="5" fill="#c3d0f4"/>
+<text x="448" y="510" fill="#223977" font-weight="bold">⬢ blue</text>
+<rect x="643" y="490" width="195" height="30" rx="5" fill="#c3c9f4"/>
+<text x="655" y="510" fill="#25317e" font-weight="bold">⬢ denim</text>
+<rect x="22" y="528" width="195" height="30" rx="5" fill="#c9c3f4"/>
+<text x="34" y="548" fill="#342786" font-weight="bold">⬢ indigo</text>
+<rect x="229" y="528" width="195" height="30" rx="5" fill="#d8c3f4"/>
+<text x="241" y="548" fill="#49247b" font-weight="bold">⬢ violet</text>
+<rect x="436" y="528" width="195" height="30" rx="5" fill="#e2c3f4"/>
+<text x="448" y="548" fill="#552173" font-weight="bold">⬢ grape</text>
+<rect x="643" y="528" width="195" height="30" rx="5" fill="#ebc3f4"/>
+<text x="655" y="548" fill="#5e1f6b" font-weight="bold">⬢ plum</text>
+<rect x="22" y="566" width="195" height="30" rx="5" fill="#f4c3f2"/>
+<text x="34" y="586" fill="#671e64" font-weight="bold">⬢ orchid</text>
+<rect x="229" y="566" width="195" height="30" rx="5" fill="#f4c3e3"/>
+<text x="241" y="586" fill="#6b1f51" font-weight="bold">⬢ magenta</text>
+<rect x="436" y="566" width="195" height="30" rx="5" fill="#f4c3db"/>
+<text x="448" y="586" fill="#6b1f45" font-weight="bold">⬢ fuchsia</text>
+<rect x="643" y="566" width="195" height="30" rx="5" fill="#f4c3c9"/>
+<text x="655" y="586" fill="#6f202b" font-weight="bold">⬢ blush</text>
+</svg>
