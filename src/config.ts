@@ -43,6 +43,27 @@ const THEME_COLOR_NAMES: ThemeColor[] = [
   "borderMuted",
 ];
 
+/**
+ * End-cap style for the status bar pill:
+ *  - "half":  ◖ ◗  rounded, widely supported (default)
+ *  - "round": Powerline rounded caps (needs a Nerd/Powerline font)
+ *  - "block": ▌ ▐  squared half-blocks
+ *  - "none":  flat, no caps
+ */
+export type CapStyle = "half" | "round" | "block" | "none";
+
+const CAP_STYLES: CapStyle[] = ["half", "round", "block", "none"];
+
+export function parseCap(raw: string | undefined): CapStyle {
+  const v = (raw ?? "").trim().toLowerCase();
+  return (CAP_STYLES as string[]).includes(v) ? (v as CapStyle) : "half";
+}
+
+/** True when raw is an exact cap-style word (half/round/block/none). */
+export function isCapWord(raw: string): boolean {
+  return (CAP_STYLES as string[]).includes(raw.trim().toLowerCase());
+}
+
 export interface FrameConfig {
   /** Session name shown in the frame. Empty means the extension is dormant. */
   name: string;
@@ -52,6 +73,8 @@ export interface FrameConfig {
   color: FrameColor;
   /** Glyph shown before the name. */
   icon: string;
+  /** Status-bar pill end-cap style. */
+  cap: CapStyle;
 }
 
 export function parseStyle(raw: string | undefined): FrameStyle {
@@ -120,5 +143,6 @@ export function configFromEnv(env: NodeJS.ProcessEnv = process.env): FrameConfig
   const style = parseStyle(env.PISM_FRAME_STYLE);
   const color = parseColor(env.PISM_FRAME_COLOR);
   const icon = (env.PISM_FRAME_ICON ?? "⬢").trim() || "⬢";
-  return { name, host, style: name ? style : "off", color, icon };
+  const cap = parseCap(env.PISM_FRAME_CAP);
+  return { name, host, style: name ? style : "off", color, icon, cap };
 }
