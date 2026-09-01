@@ -1,9 +1,15 @@
 # Every merge of dev -> main cuts a stable release: publishes to npm under the
-# "latest" dist-tag and creates a GitHub release. Default bump is MINOR;
-# override on the PR with a label:
+# "latest" dist-tag via **Trusted Publishing (OIDC)** — no long-lived token —
+# and creates a GitHub release. Default bump is MINOR; override on the PR with a
+# label:
 #   release:major  -> major bump
 #   release:minor  -> minor bump (default)
 #   release:patch  -> patch bump
+#
+# npm publish is gated on the repo variable NPM_PUBLISH == 'true'. Set it once
+# you've created the npm package and configured a trusted publisher pointing at
+# this workflow file (release.yml). Until then, the tag + GitHub release are
+# still created and the npm step is skipped.
 name: release
 
 on:
@@ -12,7 +18,8 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  id-token: write # OIDC for npm trusted publishing
+  contents: write # push tags + create the GitHub release
 
 concurrency:
   group: release-main
@@ -22,8 +29,6 @@ jobs:
   release:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    env:
-      HAS_NPM: ${{ secrets.NPM_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,9 +37,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24" # ships npm 11
           registry-url: "https://registry.npmjs.org"
-          cache: npm
+
+      # Trusted publishing needs npm >= 11.5.1.
+      - run: npm i -g npm@latest
 
       - run: npm ci
       - run: npm run check # typecheck + test + build
@@ -68,15 +75,13 @@ jobs:
           git tag "${{ steps.ver.outputs.version }}"
           git push origin "${{ steps.ver.outputs.version }}"
 
-      - name: Publish to npm (latest)
-        if: env.HAS_NPM == 'true'
+      - name: Publish to npm (latest, OIDC — provenance auto-generated)
+        if: vars.NPM_PUBLISH == 'true'
         run: npm publish --tag latest --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Note if npm publish was skipped
-        if: env.HAS_NPM != 'true'
-        run: echo "::warning::NPM_TOKEN not set — skipped npm publish. Add the secret to enable it."
+      - name: Note if npm publish is not enabled yet
+        if: vars.NPM_PUBLISH != 'true'
+        run: echo "::warning::NPM_PUBLISH variable not set — skipped npm publish. Create the package + trusted publisher, then set repo variable NPM_PUBLISH=true."
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
