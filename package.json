@@ -28,6 +28,7 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
+    "pi-package",
     "pi",
     "pi.dev",
     "pi-coding-agent",
@@ -57,5 +58,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "pi": {
+    "extensions": [
+      "./dist/index.js"
+    ]
   }
 }

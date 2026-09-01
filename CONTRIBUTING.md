@@ -11,10 +11,10 @@ feature/*  ──PR──▶  dev  ──PR──▶  main
 ```
 
 - Do your work on a **feature branch** off `dev`.
-- Open a **PR into `dev`**. Merging it publishes a **patch pre-release** to npm
-  under the `next` dist-tag.
+- Open a **PR into `dev`**. Merging it cuts a **patch pre-release** (git tag +
+  GitHub pre-release). Pre-releases are **not** on npm — install them from git.
 - To ship stable, open a **PR from `dev` into `main`**. Merging it publishes a
-  **minor** (default) or **major** release to npm under `latest`.
+  **minor** (default) or **major** release to **npm** under `latest`.
 - You never push directly to `dev` or `main`, and you never PR a feature branch
   straight into `main` (a `guard` check rejects it).
 
@@ -53,8 +53,10 @@ Releases are automated from the branch flow — you don't bump `package.json` or
 tag by hand. Versions are computed from the highest git tag by
 `scripts/next-version.sh`:
 
-- Merge into `dev` → **patch** bump → published to npm `next`, GitHub **pre-release**.
-- Merge `dev` → `main` → **minor** (default) bump → published to npm `latest`,
+- Merge into `dev` → **patch** bump → git tag + GitHub **pre-release** (no npm).
+  Install a pre-release straight from git:
+  `pi install git:github.com/vandlol/pi-pism-frame@<tag>`.
+- Merge `dev` → `main` → **minor** (default) bump → published to npm `latest` +
   GitHub **release**. Override the bump with a PR label:
 
   | Label | Bump |
@@ -66,13 +68,26 @@ tag by hand. Versions are computed from the highest git tag by
 Tags are plain SemVer (no `v` prefix). The committed `package.json` version stays
 `0.0.0`; the release workflow sets the real version at publish time.
 
-## npm publishing
+## npm publishing (Trusted Publishing / OIDC)
 
-The release workflows publish to npm only when an **`NPM_TOKEN`** repository
-secret is present (Settings → Secrets and variables → Actions). Without it, the
-git tag + GitHub release are still created and a warning notes that the npm
-publish was skipped. The token is never taken from a contributor's machine — it
-must be an Actions secret.
+Stable releases publish to npm using **Trusted Publishing** — no long-lived
+token. `release.yml` requests an OIDC token (`id-token: write`) and npm accepts
+the publish from this authorized workflow. Publishing from this public repo also
+**auto-generates provenance**.
+
+One-time setup (owner only):
+
+1. Create a free npm account and ensure the package name `pi-pism-frame` is
+   yours (a first `npm publish` may be needed to claim a brand-new name).
+2. On npmjs.com → Packages → `pi-pism-frame` → Settings → **Trusted publishing**,
+   add a GitHub Actions publisher: repo `vandlol/pi-pism-frame`, workflow file
+   **`release.yml`**, action `npm publish`. (A package can have only **one**
+   trusted publisher — that's why only stable releases go to npm.)
+3. In the repo → Settings → Secrets and variables → Actions → **Variables**, set
+   **`NPM_PUBLISH=true`** to enable the publish step.
+
+Until `NPM_PUBLISH` is `true`, stable releases still tag + create a GitHub
+release and simply skip the npm step (with a warning).
 
 ## Local testing in pi
 

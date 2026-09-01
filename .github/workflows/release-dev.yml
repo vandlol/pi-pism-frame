@@ -1,7 +1,12 @@
-# Every merge into dev cuts a PATCH pre-release: builds, publishes to npm under
-# the "next" dist-tag (so `npm install pi-pism-frame` stays on stable while
-# `npm install pi-pism-frame@next` picks it up), and creates a GitHub
-# *pre-release*.
+# Every merge into dev cuts a PATCH pre-release: builds, tags, and creates a
+# GitHub *pre-release*. Pre-releases are NOT published to npm — they're
+# installable straight from git:
+#
+#   pi install git:github.com/vandlol/pi-pism-frame@<tag>
+#
+# Only stable releases (dev -> main) go to npm (see release.yml). This keeps a
+# single npm publish surface, which is required because a package can have only
+# one npm trusted publisher (bound to release.yml).
 name: release-dev
 
 on:
@@ -18,8 +23,6 @@ concurrency:
 jobs:
   prerelease:
     runs-on: ubuntu-latest
-    env:
-      HAS_NPM: ${{ secrets.NPM_TOKEN != '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,7 +31,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          registry-url: "https://registry.npmjs.org"
           cache: npm
 
       - run: npm ci
@@ -41,23 +43,10 @@ jobs:
           echo "version=$V" >> "$GITHUB_OUTPUT"
           echo "next pre-release: $V"
 
-      - name: Set package version
-        run: npm version "${{ steps.ver.outputs.version }}" --no-git-tag-version --allow-same-version
-
       - name: Tag
         run: |
           git tag "${{ steps.ver.outputs.version }}"
           git push origin "${{ steps.ver.outputs.version }}"
-
-      - name: Publish to npm (next)
-        if: env.HAS_NPM == 'true'
-        run: npm publish --tag next --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Note if npm publish was skipped
-        if: env.HAS_NPM != 'true'
-        run: echo "::warning::NPM_TOKEN not set — skipped npm publish. Add the secret to enable it."
 
       - name: Publish GitHub pre-release
         uses: softprops/action-gh-release@v2

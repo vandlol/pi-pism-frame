@@ -18,8 +18,16 @@ and title surfaces and nothing else. **You pick the style and color.**
 
 ## Install
 
+From git (works today, no npm account needed) — pin a released tag:
+
 ```sh
-pi install pi-pism-frame
+pi install git:github.com/vandlol/pi-pism-frame@0.0.1
+```
+
+From npm (stable releases, once published):
+
+```sh
+pi install npm:pi-pism-frame
 ```
 
 Or drop a built copy in `~/.pi/agent/extensions/`, or load it ad-hoc for a run:
@@ -27,6 +35,9 @@ Or drop a built copy in `~/.pi/agent/extensions/`, or load it ad-hoc for a run:
 ```sh
 pi -e ./dist/index.js
 ```
+
+> Stable releases ship to npm; pre-releases are git-only (`…@<tag>`). See
+> [CONTRIBUTING.md](CONTRIBUTING.md) for the release model.
 
 The extension stays **dormant unless `PISM_SESSION_NAME` is set**, so installing
 it never changes plain `pi` — it only lights up when a session name is provided
