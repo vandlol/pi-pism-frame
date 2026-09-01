@@ -6,8 +6,10 @@ import type {
 import type { TUI } from "@earendil-works/pi-tui";
 import {
   configFromEnv,
+  isCapWord,
   isColorToken,
   isStyleWord,
+  parseCap,
   parseColor,
   parseStyle,
   type FrameConfig,
@@ -73,7 +75,7 @@ export default function pismFrame(pi: ExtensionAPI): void {
   // Live control: `/pism-frame [style] [color]`
   pi.registerCommand(COMMAND, {
     description:
-      "Set the pism session frame: /pism-frame [name] [full|header|bar|title|off] [color|#hex]",
+      "Set the pism frame: /pism-frame [name] [full|header|bar|title|off] [color|#hex] [half|round|block|none]",
     handler: async (args, ctx) => {
       const arg = (args ?? "").trim();
       if (arg) {
@@ -98,14 +100,15 @@ export default function pismFrame(pi: ExtensionAPI): void {
  */
 function applyArgs(cfg: FrameConfig, arg: string): FrameConfig {
   const tokens = arg.split(/\s+/).filter(Boolean);
-  let { style, color, name } = cfg;
+  let { style, color, name, cap } = cfg;
   for (const tok of tokens) {
     if (isStyleWord(tok)) style = parseStyle(tok);
+    else if (isCapWord(tok)) cap = parseCap(tok);
     else if (isColorToken(tok)) color = parseColor(tok);
     else name = tok;
   }
   if (name && style === "off") style = "full";
-  return { ...cfg, style, color, name };
+  return { ...cfg, style, color, name, cap };
 }
 
 function describeColor(cfg: FrameConfig): string {

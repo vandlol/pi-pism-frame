@@ -58,15 +58,19 @@ add(`<rect x="${panelX}" y="${panelY}" width="${panelW}" height="${panelH}" rx="
 // title (tab)
 add(`<text x="${panelX + panelW / 2}" y="${panelY + 24}" fill="${TITLE}" text-anchor="middle" opacity="0.8">pism: ${demoHost}:${demoName}</text>`);
 
-// header line: colored name + muted host + rule
-let hy = panelY + 58;
 const icon = "\u2b22"; // ⬢
-const nameStr = `${icon} ${demoName}`;
-const hostStr = `  \u00b7  ${demoHost}`;
-add(`<text x="${panelX + 16}" y="${hy}" xml:space="preserve"><tspan fill="${hex(demoPastel.bg)}" font-weight="bold">${esc(nameStr)}</tspan><tspan fill="${MUTED}">${esc(hostStr)}</tspan></text>`);
-const ruleStart = panelX + 16 + (nameStr.length + hostStr.length + 1) * CH;
-const ruleCols = Math.max(0, Math.floor((panelX + panelW - 16 - ruleStart) / CH));
-add(`<text x="${ruleStart}" y="${hy}" fill="${MUTED}" xml:space="preserve">${"\u2500".repeat(ruleCols)}</text>`);
+const label = `${icon} ${demoName}  \u00b7  ${demoHost}`;
+
+// A rounded pill (fully-rounded ends) with pastel fill + readable dark text.
+const drawPill = (x: number, y: number) => {
+  const h = 26;
+  const w = Math.round((label.length + 3) * CH);
+  add(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h / 2}" fill="${hex(demoPastel.bg)}"/>`);
+  add(`<text x="${x + 16}" y="${y + 18}" fill="${hex(demoPastel.fg)}" font-weight="bold" xml:space="preserve">${esc(label)}</text>`);
+};
+
+// top pill (header) — the "neat top bar"
+drawPill(panelX + 14, panelY + 40);
 
 // generic placeholder transcript (no real content)
 const lines = [
@@ -76,15 +80,12 @@ const lines = [
   [" ", "  2. write a reversible migration"],
 ];
 lines.forEach((ln, i) => {
-  const y = hy + 26 + i * 22;
-  add(`<text x="${panelX + 16}" y="${y}" fill="${DIM}" xml:space="preserve">${esc(ln[0] + " " + ln[1])}</text>`);
+  const y = panelY + 92 + i * 22;
+  add(`<text x="${panelX + 18}" y="${y}" fill="${DIM}" xml:space="preserve">${esc(ln[0] + " " + ln[1])}</text>`);
 });
 
-// bottom bar: full-width pastel fill + readable text
-const barH = 26;
-const barY = panelY + panelH - barH - 10;
-add(`<rect x="${panelX + 10}" y="${barY}" width="${panelW - 20}" height="${barH}" rx="5" fill="${hex(demoPastel.bg)}"/>`);
-add(`<text x="${panelX + 22}" y="${barY + 18}" fill="${hex(demoPastel.fg)}" font-weight="bold" xml:space="preserve">${esc(`${icon} ${demoName}  \u00b7  ${demoHost}`)}</text>`);
+// bottom pill (status bar)
+drawPill(panelX + 14, panelY + panelH - 26 - 12);
 
 // ---- palette showcase --------------------------------------------------------
 add(`<text x="${PAD}" y="${gridTop - 16}" fill="${TITLE}">32 readable pastels \u2014 auto-assigned per session name</text>`);

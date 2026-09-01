@@ -5,14 +5,14 @@
 <circle cx="62" cy="42" r="5" fill="#f9e2af"/>
 <circle cx="80" cy="42" r="5" fill="#a6e3a1"/>
 <text x="430" y="46" fill="#cdd6f4" text-anchor="middle" opacity="0.8">pism: mac:calm-otter</text>
-<text x="38" y="80" xml:space="preserve"><tspan fill="#f4c3e3" font-weight="bold">⬢ calm-otter</tspan><tspan fill="#6b7089">  ·  mac</tspan></text>
-<text x="214.4" y="80" fill="#6b7089" xml:space="preserve">────────────────────────────────────────────────────────────────────────</text>
-<text x="38" y="106" fill="#9399b2" xml:space="preserve">› you: plan the migration in small steps</text>
-<text x="38" y="128" fill="#9399b2" xml:space="preserve">  pi: sure — here’s a first pass…</text>
-<text x="38" y="150" fill="#9399b2" xml:space="preserve">    1. inventory the current schema</text>
-<text x="38" y="172" fill="#9399b2" xml:space="preserve">    2. write a reversible migration</text>
-<rect x="32" y="216" width="796" height="26" rx="5" fill="#f4c3e3"/>
-<text x="44" y="234" fill="#6b1f51" font-weight="bold" xml:space="preserve">⬢ calm-otter  ·  mac</text>
+<rect x="36" y="62" width="193" height="26" rx="13" fill="#f4c3e3"/>
+<text x="52" y="80" fill="#6b1f51" font-weight="bold" xml:space="preserve">⬢ calm-otter  ·  mac</text>
+<text x="40" y="114" fill="#9399b2" xml:space="preserve">› you: plan the migration in small steps</text>
+<text x="40" y="136" fill="#9399b2" xml:space="preserve">  pi: sure — here’s a first pass…</text>
+<text x="40" y="158" fill="#9399b2" xml:space="preserve">    1. inventory the current schema</text>
+<text x="40" y="180" fill="#9399b2" xml:space="preserve">    2. write a reversible migration</text>
+<rect x="36" y="214" width="193" height="26" rx="13" fill="#f4c3e3"/>
+<text x="52" y="232" fill="#6b1f51" font-weight="bold" xml:space="preserve">⬢ calm-otter  ·  mac</text>
 <text x="22" y="284" fill="#cdd6f4">32 readable pastels — auto-assigned per session name</text>
 <rect x="22" y="300" width="195" height="30" rx="5" fill="#f4c3cf"/>
 <text x="34" y="320" fill="#6f2034" font-weight="bold">⬢ rose</text>

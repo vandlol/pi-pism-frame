@@ -81,7 +81,7 @@ test("full style wires title + header + status", () => {
       const [line] = comp.render(50);
       assert.match(line, /calm-otter/);
       assert.match(line, /mac/);
-      assert.match(line, /─/); // rule fills width
+      assert.ok(line.includes("\u25d6") && line.includes("\u25d7"), "header renders a rounded pill");
     },
   );
 });
