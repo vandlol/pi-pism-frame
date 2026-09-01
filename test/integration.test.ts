@@ -7,23 +7,25 @@ function fakeTheme() {
   return {
     fg: (color: string, text: string) => `<${color}>${text}</>`,
     getColorMode: () => "truecolor" as const,
+    getFgAnsi: (_color: string) => "\x1b[38;2;10;20;30m",
   };
 }
 
 function fakeUI() {
+  type Factory = ((tui: unknown, theme: unknown) => { render(w: number): string[] }) | undefined;
   const state: {
     title?: string;
-    header?: ((tui: unknown, theme: unknown) => { render(w: number): string[] }) | undefined;
-    status: Record<string, string | undefined>;
+    header?: Factory;
+    widgets: Record<string, Factory>;
     notes: string[];
-  } = { status: {}, notes: [] };
+  } = { widgets: {}, notes: [] };
   const theme = fakeTheme();
   return {
     state,
     theme,
     setTitle: (t: string) => (state.title = t),
-    setHeader: (f: typeof state.header) => (state.header = f),
-    setStatus: (key: string, text: string | undefined) => (state.status[key] = text),
+    setHeader: (f: Factory) => (state.header = f),
+    setWidget: (key: string, f: Factory) => (state.widgets[key] = f),
     notify: (msg: string) => state.notes.push(msg),
   };
 }
@@ -68,7 +70,11 @@ test("full style wires title + header + status", () => {
 
       assert.equal(ui.state.title, "pism: mac:calm-otter");
       assert.ok(ui.state.header, "header factory should be set");
-      assert.ok(ui.state.status["pism"], "status should be set");
+      assert.ok(ui.state.widgets["pism-bar"], "bar widget should be set");
+
+      // The bar widget renders a full-width strip carrying the name.
+      const bar = ui.state.widgets["pism-bar"]!(null, ui.theme);
+      assert.match(bar.render(30)[0], /calm-otter/);
 
       // Render the header component the extension handed to pi.
       const comp = ui.state.header!(null, ui.theme);
@@ -87,7 +93,7 @@ test("bar style: status only, no header", () => {
     const ui = fakeUI();
     pi.handlers["session_start"](null, { ui } as never);
     assert.equal(ui.state.header, undefined, "no header in bar style");
-    assert.ok(ui.state.status["pism"], "status set in bar style");
+    assert.ok(ui.state.widgets["pism-bar"], "bar widget set in bar style");
     assert.equal(ui.state.title, "pism: zippy-rabbit");
   });
 });
@@ -99,7 +105,7 @@ test("dormant without a name: clears everything", () => {
     const ui = fakeUI();
     pi.handlers["session_start"](null, { ui } as never);
     assert.equal(ui.state.header, undefined);
-    assert.equal(ui.state.status["pism"], undefined);
+    assert.equal(ui.state.widgets["pism-bar"], undefined);
     assert.equal(ui.state.title, undefined);
   });
 });
@@ -114,11 +120,27 @@ test("/pism-frame command changes style live", async () => {
       // Switch to title-only via the command.
       await pi.commands["pism-frame"]("title", { ui } as never);
       assert.equal(ui.state.header, undefined, "title style drops the header");
-      assert.equal(ui.state.status["pism"], undefined, "title style drops the status");
+      assert.equal(ui.state.widgets["pism-bar"], undefined, "title style drops the bar");
       assert.equal(ui.state.title, "pism: calm-otter");
       assert.ok(ui.state.notes.length > 0, "command should notify");
     },
   );
+});
+
+test("/pism-frame <name> activates from dormant", async () => {
+  await withEnvAsync({}, async () => {
+    const pi = fakePi();
+    pismFrame(pi as never);
+    const ui = fakeUI();
+    // Dormant: session_start clears.
+    pi.handlers["session_start"](null, { ui } as never);
+    assert.equal(ui.state.title, undefined);
+    // Set a name (and a color) live; should switch style on to full.
+    await pi.commands["pism-frame"]("calm-otter warning", { ui } as never);
+    assert.equal(ui.state.title, "pism: calm-otter");
+    assert.ok(ui.state.header, "name activation shows header");
+    assert.ok(ui.state.widgets["pism-bar"], "name activation shows bar");
+  });
 });
 
 async function withEnvAsync(env: Record<string, string>, fn: () => Promise<void>) {

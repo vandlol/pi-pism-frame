@@ -1,4 +1,5 @@
 import type { ThemeColor } from "@earendil-works/pi-coding-agent";
+import { paletteByName, type Pastel } from "./palette";
 
 /**
  * Which pieces of chrome to show. The user chooses the style — no piece is
@@ -15,8 +16,16 @@ export type FrameStyle = "full" | "header" | "bar" | "title" | "off";
 
 const STYLES: FrameStyle[] = ["full", "header", "bar", "title", "off"];
 
-/** A resolved color: a named theme color, or a truecolor RGB triple. */
+/**
+ * A resolved color:
+ *  - "auto":   derive a stable pastel from the session name (default)
+ *  - "pastel": one of the 32 curated pastels (readable text baked in)
+ *  - "theme":  a named pi theme color
+ *  - "rgb":    an arbitrary hex color
+ */
 export type FrameColor =
+  | { kind: "auto" }
+  | { kind: "pastel"; pastel: Pastel }
   | { kind: "theme"; name: ThemeColor }
   | { kind: "rgb"; r: number; g: number; b: number };
 
@@ -50,19 +59,37 @@ export function parseStyle(raw: string | undefined): FrameStyle {
   return (STYLES as string[]).includes(v) ? (v as FrameStyle) : "full";
 }
 
+/** True when raw is an exact style word (unlike parseStyle, no "full" default). */
+export function isStyleWord(raw: string): boolean {
+  return (STYLES as string[]).includes(raw.trim().toLowerCase());
+}
+
+/** True when raw is a recognized color: a pastel name, theme color, or hex. */
+export function isColorToken(raw: string): boolean {
+  const v = raw.trim().toLowerCase();
+  return (
+    paletteByName(v) !== undefined ||
+    (THEME_COLOR_NAMES as string[]).includes(v) ||
+    parseHex(v) !== null
+  );
+}
+
 /**
- * Parse a color spec: a theme color name (e.g. "accent", "warning") or a hex
- * value ("#c96442" / "c96442" / "#abc"). Falls back to the theme accent.
+ * Parse a color spec, in priority order: a curated pastel name (e.g. "rose",
+ * "sky"), a pi theme color name (e.g. "accent"), or a hex value. An empty or
+ * unrecognized spec means "auto" — derive a stable pastel from the name.
  */
 export function parseColor(raw: string | undefined): FrameColor {
   const v = (raw ?? "").trim().toLowerCase();
-  if (v === "") return { kind: "theme", name: "accent" };
+  if (v === "") return { kind: "auto" };
+  const pastel = paletteByName(v);
+  if (pastel) return { kind: "pastel", pastel };
   if ((THEME_COLOR_NAMES as string[]).includes(v)) {
     return { kind: "theme", name: v as ThemeColor };
   }
   const rgb = parseHex(v);
   if (rgb) return { kind: "rgb", ...rgb };
-  return { kind: "theme", name: "accent" };
+  return { kind: "auto" };
 }
 
 export function parseHex(raw: string): { r: number; g: number; b: number } | null {

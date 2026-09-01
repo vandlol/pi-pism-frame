@@ -44,7 +44,7 @@ pi; set them yourself for standalone use):
 | `PISM_SESSION_NAME` | Name to display. **Required to activate.** | — (dormant) |
 | `PISM_HOST` | Host label shown after the name (`local` is hidden in the title) | — |
 | `PISM_FRAME_STYLE` | `full` · `header` · `bar` · `title` · `off` | `full` |
-| `PISM_FRAME_COLOR` | A theme color name (`accent`, `warning`, `success`, …) or a hex (`#c96442`) | `accent` |
+| `PISM_FRAME_COLOR` | A pastel name, a theme color, or a hex (see [Colors](#colors)) | `auto` |
 | `PISM_FRAME_ICON` | Glyph shown before the name | `⬢` |
 
 **Styles** (you choose — there is deliberately no full-screen rectangle):
@@ -55,17 +55,37 @@ pi; set them yourself for standalone use):
 - `title` — terminal title only
 - `off` — nothing
 
-**Colors** honor the active pi theme. A named color (e.g. `accent`) always maps
-to the theme palette; a hex color renders as truecolor when the terminal
-supports it, and gracefully falls back to the theme accent on 256-color
-terminals.
+### Colors
+
+`PISM_FRAME_COLOR` (or the color token to `/pism-frame`) accepts, in priority
+order:
+
+1. **A curated pastel name** — 32 modern pastels, each with a hand-tuned,
+   high-contrast text color (all verified **WCAG AAA** in truecolor, **AA** after
+   256-color quantization), so bar text is always readable:
+
+   ```
+   rose  coral  salmon  peach  apricot  amber  honey  gold
+   lemon citron lime    fern   green    sage   mint   emerald
+   teal  aqua   cyan    sky    azure    cerulean blue  denim
+   indigo violet grape  plum   orchid   magenta fuchsia blush
+   ```
+
+2. **A pi theme color** — `accent`, `warning`, `success`, `error`, `muted`, … —
+   mapped through the active theme.
+3. **A hex value** — `#c96442` (truecolor; nearest 256 on 256-color terminals),
+   with black/white text chosen by luminance.
+
+The default is **`auto`**: each session *name* deterministically maps to one of
+the 32 pastels, so different sessions get different (readable) colors for free.
 
 ### Change it live
 
 ```
 /pism-frame                 show current style
 /pism-frame bar             switch to the status-bar style
-/pism-frame header #c96442  header style in a custom color
+/pism-frame header rose     header style in the rose pastel
+/pism-frame bar #c96442     bar style in a custom hex color
 /pism-frame off             hide the frame
 ```
 

@@ -6,15 +6,16 @@ import type {
 import type { TUI } from "@earendil-works/pi-tui";
 import {
   configFromEnv,
+  isColorToken,
+  isStyleWord,
   parseColor,
   parseStyle,
   type FrameConfig,
-  type FrameStyle,
 } from "./config";
-import { headerComponent, statusText, titleText } from "./frame";
+import { barComponent, headerComponent, titleText } from "./frame";
 
-const STATUS_KEY = "pism";
-const HEADER_KEY = "pism-frame";
+const BAR_KEY = "pism-bar";
+const COMMAND = "pism-frame";
 
 /**
  * pi-pism-frame — frame a pi session with a colored, named header, a status
@@ -51,16 +52,18 @@ export default function pismFrame(pi: ExtensionAPI): void {
     }
 
     if (showBar) {
-      // setStatus wants a plain string; we style it with the active theme.
-      ui.setStatus(STATUS_KEY, statusText(ui.theme, cfg));
+      // A full-width widget below the editor — a real bar, not a footer pill.
+      ui.setWidget(BAR_KEY, (_tui: TUI, theme: Theme) => barComponent(theme, cfg), {
+        placement: "belowEditor",
+      });
     } else {
-      ui.setStatus(STATUS_KEY, undefined);
+      ui.setWidget(BAR_KEY, undefined);
     }
   };
 
   const clear = (ui: ExtensionContext["ui"]): void => {
     ui.setHeader(undefined);
-    ui.setStatus(STATUS_KEY, undefined);
+    ui.setWidget(BAR_KEY, undefined);
   };
 
   // Apply on session start and whenever the session identity changes.
@@ -68,8 +71,9 @@ export default function pismFrame(pi: ExtensionAPI): void {
   pi.on("session_info_changed", (_event, ctx) => apply(ctx));
 
   // Live control: `/pism-frame [style] [color]`
-  pi.registerCommand(HEADER_KEY, {
-    description: "Set the pism session frame: /pism-frame [full|header|bar|title|off] [color|#hex]",
+  pi.registerCommand(COMMAND, {
+    description:
+      "Set the pism session frame: /pism-frame [name] [full|header|bar|title|off] [color|#hex]",
     handler: async (args, ctx) => {
       const arg = (args ?? "").trim();
       if (arg) {
@@ -78,33 +82,41 @@ export default function pismFrame(pi: ExtensionAPI): void {
       apply(ctx);
       ctx.ui.notify(
         cfg.name
-          ? `pism frame: ${cfg.style}${cfg.style === "off" ? "" : ` (${describeColor(cfg)})`}`
-          : "pism frame: no session name set (PISM_SESSION_NAME)",
+          ? `pism frame: ${cfg.name} · ${cfg.style}${cfg.style === "off" ? "" : ` (${describeColor(cfg)})`}`
+          : "pism frame: set a name with  /pism-frame <name>",
         "info",
       );
     },
   });
 }
 
-/** Parse `/pism-frame` args: an optional style word and/or a color token. */
+/**
+ * Parse `/pism-frame` args. Tokens are classified: an exact style word sets the
+ * style, a theme-color name or #hex sets the color, and anything else is taken
+ * as the session name (so `/pism-frame calm-otter bar warning` works). Setting
+ * a name while dormant switches the style on.
+ */
 function applyArgs(cfg: FrameConfig, arg: string): FrameConfig {
   const tokens = arg.split(/\s+/).filter(Boolean);
-  let style: FrameStyle = cfg.style;
-  let color = cfg.color;
+  let { style, color, name } = cfg;
   for (const tok of tokens) {
-    const s = parseStyle(tok);
-    // parseStyle defaults unknown tokens to "full"; only accept exact matches.
-    if (["full", "header", "bar", "title", "off"].includes(tok.toLowerCase())) {
-      style = s;
-    } else {
-      color = parseColor(tok);
-    }
+    if (isStyleWord(tok)) style = parseStyle(tok);
+    else if (isColorToken(tok)) color = parseColor(tok);
+    else name = tok;
   }
-  return { ...cfg, style, color };
+  if (name && style === "off") style = "full";
+  return { ...cfg, style, color, name };
 }
 
 function describeColor(cfg: FrameConfig): string {
-  return cfg.color.kind === "theme"
-    ? cfg.color.name
-    : `#${[cfg.color.r, cfg.color.g, cfg.color.b].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
+  switch (cfg.color.kind) {
+    case "auto":
+      return "auto";
+    case "pastel":
+      return cfg.color.pastel.name;
+    case "theme":
+      return cfg.color.name;
+    case "rgb":
+      return `#${[cfg.color.r, cfg.color.g, cfg.color.b].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
+  }
 }
