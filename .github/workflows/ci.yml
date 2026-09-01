@@ -1,9 +1,11 @@
+# Validate every PR into dev or main (and pushes to those branches).
 name: ci
 
 on:
-  push:
-    branches: [main, dev]
   pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
 
 jobs:
   build:

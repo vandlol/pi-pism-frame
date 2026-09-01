@@ -1,0 +1,68 @@
+# Every merge into dev cuts a PATCH pre-release: builds, publishes to npm under
+# the "next" dist-tag (so `npm install pi-pism-frame` stays on stable while
+# `npm install pi-pism-frame@next` picks it up), and creates a GitHub
+# *pre-release*.
+name: release-dev
+
+on:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-dev
+  cancel-in-progress: false
+
+jobs:
+  prerelease:
+    runs-on: ubuntu-latest
+    env:
+      HAS_NPM: ${{ secrets.NPM_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # all tags for version computation
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+
+      - run: npm ci
+      - run: npm run check # typecheck + test + build
+
+      - name: Compute next patch version
+        id: ver
+        run: |
+          V=$(sh scripts/next-version.sh patch)
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "next pre-release: $V"
+
+      - name: Set package version
+        run: npm version "${{ steps.ver.outputs.version }}" --no-git-tag-version --allow-same-version
+
+      - name: Tag
+        run: |
+          git tag "${{ steps.ver.outputs.version }}"
+          git push origin "${{ steps.ver.outputs.version }}"
+
+      - name: Publish to npm (next)
+        if: env.HAS_NPM == 'true'
+        run: npm publish --tag next --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Note if npm publish was skipped
+        if: env.HAS_NPM != 'true'
+        run: echo "::warning::NPM_TOKEN not set — skipped npm publish. Add the secret to enable it."
+
+      - name: Publish GitHub pre-release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.version }}
+          name: pi-pism-frame ${{ steps.ver.outputs.version }}
+          prerelease: true
+          generate_release_notes: true

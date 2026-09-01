@@ -1,0 +1,87 @@
+# Every merge of dev -> main cuts a stable release: publishes to npm under the
+# "latest" dist-tag and creates a GitHub release. Default bump is MINOR;
+# override on the PR with a label:
+#   release:major  -> major bump
+#   release:minor  -> minor bump (default)
+#   release:patch  -> patch bump
+name: release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      HAS_NPM: ${{ secrets.NPM_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0 # all tags for version computation
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+          cache: npm
+
+      - run: npm ci
+      - run: npm run check # typecheck + test + build
+
+      - name: Determine bump from PR labels (default minor)
+        id: bump
+        env:
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          bump=minor
+          case ",$LABELS," in
+            *,release:major,*) bump=major ;;
+            *,release:patch,*) bump=patch ;;
+            *,release:minor,*) bump=minor ;;
+          esac
+          echo "bump=$bump" >> "$GITHUB_OUTPUT"
+          echo "labels: $LABELS -> bump: $bump"
+
+      - name: Compute next version
+        id: ver
+        run: |
+          V=$(sh scripts/next-version.sh ${{ steps.bump.outputs.bump }})
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "next stable: $V"
+
+      - name: Set package version
+        run: npm version "${{ steps.ver.outputs.version }}" --no-git-tag-version --allow-same-version
+
+      - name: Tag
+        run: |
+          git tag "${{ steps.ver.outputs.version }}"
+          git push origin "${{ steps.ver.outputs.version }}"
+
+      - name: Publish to npm (latest)
+        if: env.HAS_NPM == 'true'
+        run: npm publish --tag latest --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Note if npm publish was skipped
+        if: env.HAS_NPM != 'true'
+        run: echo "::warning::NPM_TOKEN not set — skipped npm publish. Add the secret to enable it."
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.version }}
+          name: pi-pism-frame ${{ steps.ver.outputs.version }}
+          prerelease: false
+          generate_release_notes: true
